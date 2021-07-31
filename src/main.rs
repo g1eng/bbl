@@ -4,7 +4,7 @@ use std::fs;
 use std::fs::{Permissions, File};
 use std::os::unix::fs::PermissionsExt;
 use std::process::Command;
-use clap::{App,Arg};
+use clap::{App, Arg, ArgMatches};
 use std::io::{BufReader, BufRead, self, Write, stdin};
 
 struct Shell {
@@ -117,8 +117,9 @@ impl Shell {
     }
 }
 
-fn main() {
-    let app = App::new("riosh")
+/// get_app_matcher returns default riosh clap matcher
+fn get_app_matcher() -> ArgMatches<'static> {
+    App::new("riosh")
         .version("0.1.0")
         .author("Nomura Suzume")
         .arg(
@@ -142,8 +143,11 @@ fn main() {
                 .help("show debug messages")
                 .required(false)
         )
-        .get_matches();
+        .get_matches()
+}
 
+fn main() {
+    let app = get_app_matcher();
 
     let path;
     if app.is_present("file") {
@@ -168,7 +172,11 @@ fn main() {
         }
     } else if app.is_present("command") {
         // println!("{:?}",app.value_of("command"));
-        sh.parse_command(app.value_of("command").unwrap().to_string())
+        sh.parse_command(
+            app.value_of("command")
+                .unwrap()
+                .to_string()
+        )
     } else {
         sh.read_lines(stdin().lock());
     }
