@@ -5,7 +5,7 @@ use std::fs::{Permissions, File};
 use std::os::unix::fs::PermissionsExt;
 use std::process::Command;
 use clap::{App,Arg};
-use std::io::{BufReader, BufRead, self, Write};
+use std::io::{BufReader, BufRead, self, Write, stdin};
 
 struct Shell {
     path: PathBuf,
@@ -54,10 +54,6 @@ impl Shell {
 
     /// set_command sets command from a given String.
     /// This method is applied to the single lexical scope.
-    /// ```rust
-    /// use crates::Shell
-    ///
-    /// ```
     fn set_command(&mut self, line :String) -> Result<(),&str> {
         let mut arg_num = 0;
         for arg in line.split_ascii_whitespace() {
@@ -87,8 +83,7 @@ impl Shell {
     }
 
     /// read_lines reads lines from input file and make actions
-    fn read_lines(&mut self) -> Result<String,()>{
-        let reader = self.read_file()?;
+    fn read_lines <R: BufRead> (&mut self, reader :R) -> Result<String,()>{
         let mut lineno :i32 = 0;
         for line in reader.lines() {
             lineno += 1;
@@ -111,7 +106,7 @@ impl Shell {
     fn parse(&mut self) -> Result<String, &'static str>{
         if self.is_executable() {
             // Ok(String::from("executable"))
-            match self.read_lines() {
+            match self.read_lines(self.read_file().expect("failed to open file")) {
                 Ok(s) => Ok(s),
                 Err(_) => Err("failed to parse lines")
             }
@@ -175,7 +170,7 @@ fn main() {
         // println!("{:?}",app.value_of("command"));
         sh.parse_command(app.value_of("command").unwrap().to_string())
     } else {
-        panic!("no such way of invocation")
+        sh.read_lines(stdin().lock());
     }
 
     exit(sh.status);
