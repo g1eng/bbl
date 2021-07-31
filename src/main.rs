@@ -25,7 +25,9 @@ impl Shell {
 
     fn is_executable(&self) -> bool {
         if self.path.is_file() {
-            println!("exist");
+            if self.debug {
+                println!("exist");
+            }
             let metadata = fs::metadata(&self.path);
             let permission = Permissions::from(metadata.unwrap().permissions());
             // println!("permission {:o}", permission.mode());
@@ -41,9 +43,15 @@ impl Shell {
         let mut lineno :i32 = 0;
         for line in reader.lines() {
             lineno += 1;
-            println!("line[{}]: {:?}", lineno, line.unwrap());
+            if self.debug {
+                println!("line[{}]: {:?}", lineno, line.unwrap());
+            } else {
+                println!("{:?}", line.unwrap());
+            }
         }
-        println!("total {} lines", lineno);
+        if self.debug {
+            println!("total {} lines", lineno);
+        }
         Ok(String::from(""))
     }
 
@@ -82,7 +90,7 @@ fn main() {
 
     let mut sh = Shell{
         path: PathBuf::from(app.value_of("file").expect("invalid FILE specified")),
-        debug: app.value_of("verbose") == "true",
+        debug: app.is_present("verbose"),
         status: 0
     };
 
