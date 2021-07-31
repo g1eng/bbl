@@ -11,7 +11,7 @@ jobs:
           command: cargo install cargo-tarpaulin
       - run:
           name: Run test
-          command: cargo tarpaulin --ciserver circl-ci -o Xml
+          command: cargo tarpaulin -o Xml
       - run:
           name: download codecov
           command: curl -Os https://uploader.codecov.io/v0.1.0_4653/linux/codecov
