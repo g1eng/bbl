@@ -41,7 +41,9 @@ impl Shell {
                 println!("[file exist]");
             }
             let metadata = fs::metadata(&self.path);
-            let permission = Permissions::from(metadata.unwrap().permissions());
+            let permission = Permissions::from(
+                metadata.unwrap().permissions()
+            );
             // println!("permission {:o}", permission.mode());
             let user_perm = (permission.mode() >> 6) % 8;
             // println!("user_perm {:o}", user_perm);
@@ -146,7 +148,7 @@ mod tests {
 
     #[test]
     fn test_is_executable_true(){
-        let mut shell_ok = init("./fixtures/ok");
+        let mut shell_ok = init("./fixtures/canexec");
         assert_eq!(shell_ok.is_executable(), true)
     }
 

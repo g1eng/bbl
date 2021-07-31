@@ -38,8 +38,8 @@ fn get_app_matcher() -> ArgMatches<'static> {
 
 fn main() {
     let app = get_app_matcher();
-
     let path;
+
     if app.is_present("file") {
         path = PathBuf::from(app.value_of("file").expect("invalid FILE specified"))
     } else {
