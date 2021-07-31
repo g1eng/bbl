@@ -66,4 +66,41 @@ fn main() {
     exit(sh.status);
 }
 
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::Shell;
 
+    fn init(s :&str) -> Shell {
+        let shell = Shell{
+            path: PathBuf::from(s),
+            status: 0
+        };
+        shell
+    }
+
+    #[test]
+    fn test_parse_executable(){
+        let mut shell = init("./fixtures/ok");
+        assert_eq!(shell.parse().unwrap(), String::from("executable"))
+    }
+
+    #[test]
+    #[should_panic]
+    fn test_parse_error(){
+        let mut shell = init("./fixtures/utopia/no/there");
+        shell.parse().unwrap();
+    }
+
+    #[test]
+    fn test_is_executable_true(){
+        let mut shell_ok = init("./fixtures/ok");
+        assert_eq!(shell_ok.is_executable(), true)
+    }
+
+    #[test]
+    fn test_is_executable_false(){
+        let mut shell_ok = init("./fixtures/doco/nimo/9");
+        assert_eq!(shell_ok.is_executable(), false)
+    }
+}
