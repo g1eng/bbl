@@ -17,4 +17,4 @@ jobs:
           command: chmod +x codecov
       - run:
           name: upload code coverage
-          command: ./codecov -t ${CODECOV_TOKEN} -f ./coverage/cobertura.xml
+          command: ./codecov -t ${CODECOV_TOKEN} -f ./cobertura.xml
