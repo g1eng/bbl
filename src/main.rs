@@ -4,32 +4,37 @@ use std::fs;
 use std::fs::Permissions;
 use std::os::unix::fs::{PermissionsExt};
 use clap::{App,Arg};
+// use std::io::{BufReader, BufWriter};
 
-fn is_executable(desc :String) -> bool {
-    let path = PathBuf::from(desc);
-    if path.is_file() {
-        println!("exist");
-        let metadata = fs::metadata(path);
-        let permission = Permissions::from(metadata.unwrap().permissions());
-        // println!("permission {:o}", permission.mode());
-        let user_perm = (permission.mode() >> 6) % 8;
-        // println!("user_perm {:o}", user_perm);
-        user_perm == 7 || user_perm == 5
-    } else {
-        false
+struct Shell {
+    path: PathBuf,
+    // input: BufReader<String>,
+    // output: BufWriter<String>,
+    status: i32,
+}
+
+impl Shell {
+    fn is_executable(&self) -> bool {
+        if self.path.is_file() {
+            println!("exist");
+            let metadata = fs::metadata(&self.path);
+            let permission = Permissions::from(metadata.unwrap().permissions());
+            // println!("permission {:o}", permission.mode());
+            let user_perm = (permission.mode() >> 6) % 8;
+            // println!("user_perm {:o}", user_perm);
+            user_perm == 7 || user_perm == 5
+        } else {
+            false
+        }
     }
-}
 
-fn is_file(desc :String) -> bool {
-    let path = PathBuf::from(desc);
-    path.is_file()
-}
-
-fn parse(file :String) -> Result<String, &'static str>{
-    if is_executable(file) {
-        Ok(String::from("executable"))
-    } else {
-        Err("is not a executable")
+    fn parse(&mut self) -> Result<String, &'static str>{
+        if self.is_executable() {
+            Ok(String::from("executable"))
+        } else {
+            self.status = 1;
+            Err("is not a executable")
+        }
     }
 }
 
@@ -46,12 +51,19 @@ fn main() {
         )
         .get_matches();
 
+    let mut sh = Shell{
+        path: PathBuf::from(app.value_of("file").expect("invalid FILE specified")),
+        status: 0
+    };
 
-    match parse(String::from(app.value_of("file").unwrap())) {
+    match sh.parse() {
         Ok(r) => println!("{:?}",r),
         Err(e) => {
             eprintln!("{:?}",e);
-            exit(1)
         }
     }
+
+    exit(sh.status);
 }
+
+
