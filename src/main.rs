@@ -131,7 +131,15 @@ fn main() {
                 .value_name("FILE")
                 .index(1)
                 .help("executable to run")
-                .required(true)
+                .required(false)
+        )
+        .arg(
+            Arg::with_name("command")
+                .short("c")
+                .help("execute command line with argument string")
+                .value_name("COMMAND_LINE")
+                .takes_value(true)
+                .required(false)
         )
         .arg(
             Arg::with_name("verbose")
@@ -141,18 +149,33 @@ fn main() {
         )
         .get_matches();
 
+
+    let path;
+    if app.is_present("file") {
+        path = PathBuf::from(app.value_of("file").expect("invalid FILE specified"))
+    } else {
+        path = PathBuf::from("")
+    }
+
     let mut sh = Shell{
-        path: PathBuf::from(app.value_of("file").expect("invalid FILE specified")),
+        path,
         command: Command::new("ls"),
         debug: app.is_present("verbose"),
         status: 0
     };
 
-    match sh.parse() {
-        Ok(r) => print!("{:}",r),
-        Err(e) => {
-            eprintln!("{:?}",e);
+    if app.is_present("file"){
+        match sh.parse() {
+            Ok(r) => print!("{:}",r),
+            Err(e) => {
+                eprintln!("{:?}",e);
+            }
         }
+    } else if app.is_present("command") {
+        // println!("{:?}",app.value_of("command"));
+        sh.parse_command(app.value_of("command").unwrap().to_string())
+    } else {
+        panic!("no such way of invocation")
     }
 
     exit(sh.status);
