@@ -26,7 +26,7 @@ impl Shell {
     fn is_executable(&self) -> bool {
         if self.path.is_file() {
             if self.debug {
-                println!("exist");
+                println!("[file exist]");
             }
             let metadata = fs::metadata(&self.path);
             let permission = Permissions::from(metadata.unwrap().permissions());
@@ -46,11 +46,11 @@ impl Shell {
             if self.debug {
                 println!("line[{}]: {:?}", lineno, line.unwrap());
             } else {
-                println!("{:?}", line.unwrap());
+                println!("{:}", line.unwrap());
             }
         }
         if self.debug {
-            println!("total {} lines", lineno);
+            println!("[total {} lines]", lineno);
         }
         Ok(String::from(""))
     }
@@ -60,11 +60,11 @@ impl Shell {
             // Ok(String::from("executable"))
             match self.parse_lines() {
                 Ok(s) => Ok(s),
-                Err(_) => Err("kore ")
+                Err(_) => Err("failed to parse lines")
             }
         } else {
             self.status = 1;
-            Err("is not a executable")
+            Err("file is not an executable")
         }
     }
 }
@@ -95,7 +95,7 @@ fn main() {
     };
 
     match sh.parse() {
-        Ok(r) => println!("{:?}",r),
+        Ok(r) => print!("{:}",r),
         Err(e) => {
             eprintln!("{:?}",e);
         }
