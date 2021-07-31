@@ -7,11 +7,8 @@ jobs:
     steps:
       - checkout
       - run:
-          name: Install tarpaulin
-          command: cargo install cargo-tarpaulin
-      - run:
           name: Run test
-          command: cargo tarpaulin -o Xml
+          command: cargo test
       - run:
           name: download codecov
           command: curl -Os https://uploader.codecov.io/v0.1.0_4653/linux/codecov
@@ -20,4 +17,4 @@ jobs:
           command: chmod +x codecov
       - run:
           name: upload code coverage
-          command: ./codecov -t ${CODECOV_TOKEN} -f ./cobertura.xml
+          command: ./codecov -t ${CODECOV_TOKEN} -f ./coverage/cobertura.xml
