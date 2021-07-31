@@ -1,0 +1,14 @@
+version: 2.1
+jobs:
+  build:
+    working_directory: ~/repo
+    docker:
+      - image: circleci/rust:buster
+    steps:
+      - checkout
+      - run:
+          name: Install tarpaulin
+          command: cargo install cargo-tarpaulin
+      - run:
+          name: Run test
+          command: cargo test
