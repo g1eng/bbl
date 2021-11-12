@@ -7,9 +7,9 @@ use std::io::stdin;
 use shell::Shell;
 
 
-/// get_app_matcher returns default riosh clap matcher
+/// get_app_matcher returns default bbl clap matcher
 fn get_app_matcher() -> ArgMatches<'static> {
-    App::new("riosh")
+    App::new("bbl")
         .version("0.1.0")
         .author("Nomura Suzume")
         .arg(

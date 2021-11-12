@@ -85,7 +85,7 @@ impl Shell {
 
     /// read_lines reads lines from input file and make actions
     pub fn read_lines <R: BufRead> (&mut self, reader :R) -> Result<String,()>{
-        let mut lineno :i32 = 0;
+        let mut lineno :u128 = 0;
         for line in reader.lines() {
             lineno += 1;
             let line = line.unwrap();
